@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\lib\src\hesanta.Drawing.Console\hesanta.Drawing.ASCII.csproj" />
+    <ProjectReference Include="..\..\lib\src\hesanta.Drawing.ASCII\hesanta.Drawing.ASCII.csproj" />
     <ProjectReference Include="..\..\lib\src\hesanta.Drawing\hesanta.Drawing.csproj" />
   </ItemGroup>
 
