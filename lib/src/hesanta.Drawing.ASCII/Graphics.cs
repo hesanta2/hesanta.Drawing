@@ -151,7 +151,18 @@ namespace hesanta.Drawing.ASCII
         public void DrawString(string s, Brush brush, PointF position)
         {
             var solidBrush = GetSolidBrush(brush);
-            Write(position.X, position.Y, s, solidBrush.Color);
+
+            var tokens = s.Split("\n");
+
+            for (int i = 0; i < tokens.Length; i++)
+            {
+                var token = tokens[i];
+                var sToken = token.Trim('\r');
+                if (!string.IsNullOrEmpty(sToken))
+                {
+                    Write(position.X, position.Y + i, sToken, solidBrush.Color);
+                }
+            }
         }
 
         private void Write(float x, float y, string s, Color color)
