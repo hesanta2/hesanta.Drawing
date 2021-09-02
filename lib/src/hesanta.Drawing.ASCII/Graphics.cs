@@ -11,7 +11,6 @@ namespace hesanta.Drawing.ASCII
         public int Width { get; private set; }
         public int Height { get; private set; }
         public SortedList<int, Color> Colors { get; private set; } = new SortedList<int, Color>();
-        public SortedList<(float, float), (string, Color)> Output2 { get; private set; } = new SortedList<(float, float), (string, Color)>();
 
         public Graphics(int width, int height)
         {
@@ -20,15 +19,15 @@ namespace hesanta.Drawing.ASCII
             Clear();
         }
 
-        public void DrawLine(Pen pen, PointF p1, PointF p2)
+        public RectangleF DrawLine(Pen pen, PointF p1, PointF p2)
         {
             if (p1.Y == p2.Y)
             {
-                DrawHorizontalLine(pen, p1, (int)(p2.X - p1.X));
+                return DrawHorizontalLine(pen, p1, (int)(p2.X - p1.X));
             }
             else if (p1.X == p2.X)
             {
-                DrawVerticalLine(pen, p1, (int)(p2.Y - p1.Y));
+                return DrawVerticalLine(pen, p1, (int)(p2.Y - p1.Y));
             }
             else if (Math.Abs(p1.X - p2.X) == Math.Abs(p1.Y - p2.Y))
             {
@@ -37,7 +36,7 @@ namespace hesanta.Drawing.ASCII
 
                 var xDif = p2.X - p1.X;
                 var yDif = p2.Y - p1.Y;
-                DrawDiagonalLine(pen, p1, (int)Math.Sqrt((xDif * xDif) + (yDif * yDif)) * (down ? 1 : -1), down ? right : !right);
+                return DrawDiagonalLine(pen, p1, (int)Math.Sqrt((xDif * xDif) + (yDif * yDif)) * (down ? 1 : -1), down ? right : !right);
             }
             else
             {
@@ -45,44 +44,51 @@ namespace hesanta.Drawing.ASCII
             }
         }
 
-        private void DrawHorizontalLine(Pen pen, PointF position, int length)
+        private RectangleF DrawHorizontalLine(Pen pen, PointF position, int length)
         {
             var solidBrush = GetSolidBrush(pen.Brush);
             var color = solidBrush.Color;
             var direction = length > 0 ? 1 : -1;
             for (int i = 0; i < Math.Abs(length); i++)
             {
-                Write(position.X + i * direction, position.Y, "─", color);
+                float x = position.X + i * direction;
+                Write(x, position.Y, "─", color);
             }
+
+            return new RectangleF(position, new SizeF(length, 1));
         }
 
-        private void DrawVerticalLine(Pen pen, PointF position, int length)
+        private RectangleF DrawVerticalLine(Pen pen, PointF position, int length)
         {
             var solidBrush = GetSolidBrush(pen.Brush);
             var color = solidBrush.Color;
             var direction = length > 0 ? 1 : -1;
             for (int j = 0; j < Math.Abs(length); j++)
             {
-                Write(position.X, position.Y + j * direction, "│", color);
+                float y = position.Y + j * direction;
+                Write(position.X, y, "│", color);
             }
+
+            return new RectangleF(position, new SizeF(1, length));
         }
 
-        private void DrawDiagonalLine(Pen pen, PointF position, int length, bool right)
+        private RectangleF DrawDiagonalLine(Pen pen, PointF position, int length, bool right)
         {
             var solidBrush = GetSolidBrush(pen.Brush);
             var color = solidBrush.Color;
             var direction = length > 0 ? 1 : -1;
-            for (int i = 0; i < Math.Abs(length * 0.75); i++)
+            float calculatedLength = Math.Abs(length * 0.75f);
+            for (int i = 0; i < calculatedLength; i++)
             {
                 Write(position.X + i * direction * (right ? 1 : -1), position.Y + i * direction, right ? "\\" : "/", color);
             }
+
+            return new RectangleF(position, new SizeF(calculatedLength, calculatedLength));
         }
 
-        public void DrawPoligon(Pen pen, bool closed, params PointF[] points)
+        public RectangleF DrawPoligon(Pen pen, bool closed, params PointF[] points)
         {
-            var solidBrush = GetSolidBrush(pen.Brush);
-            var color = solidBrush.Color;
-
+            var boundsList = new List<RectangleF>();
             for (int i = 0; i < points.Length; i++)
             {
                 var p1 = points[i];
@@ -90,26 +96,35 @@ namespace hesanta.Drawing.ASCII
                 {
                     if (closed)
                     {
-                        DrawLine(pen, p1, points[0]);
+                        var firstBounds = DrawLine(pen, p1, points[0]);
+                        boundsList.Add(firstBounds);
                     }
                     break;
                 }
 
                 var p2 = points[i + 1];
 
-                DrawLine(pen, p1, p2);
+                var bounds = DrawLine(pen, p1, p2);
+                boundsList.Add(bounds);
             }
+
+            var x = Math.Ceiling(boundsList.Min(x => x.X));
+            var y = Math.Ceiling(boundsList.Min(x => x.Y));
+            var width = Math.Ceiling(Math.Abs(boundsList.Max(x => x.X) - x)) + 1;
+            var height = Math.Ceiling(Math.Abs(boundsList.Max(x => x.Y) - y)) + 1;
+
+            return new RectangleF(new PointF((float)x, (float)y), new SizeF((float)width, (float)height));
         }
 
-        public void DrawRectangle(Pen pen, PointF position, float width, float height)
+        public RectangleF DrawRectangle(Pen pen, PointF position, float width, float height)
         {
             var solidBrush = GetSolidBrush(pen.Brush);
             var color = solidBrush.Color;
 
             var intX = (int)position.X;
             var intY = (int)position.Y;
-            var w = intX + width;
-            var h = intY + height;
+            var w = (int)Math.Ceiling(intX + width);
+            var h = (int)Math.Ceiling(intY + height);
             for (int j = (int)position.Y; j < h; j++)
                 for (int i = (int)position.X; i < w; i++)
                 {
@@ -146,23 +161,23 @@ namespace hesanta.Drawing.ASCII
                         }
                     }
                 }
+
+            return new RectangleF(position, new SizeF(width, height));
         }
 
-        public void DrawString(string s, Brush brush, PointF position)
+        public RectangleF DrawString(string s, Brush brush, PointF position)
         {
             var solidBrush = GetSolidBrush(brush);
 
-            var tokens = s.Split("\n");
+            var tokens = s.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < tokens.Length; i++)
             {
                 var token = tokens[i];
-                var sToken = token.Trim('\r');
-                if (!string.IsNullOrEmpty(sToken))
-                {
-                    Write(position.X, position.Y + i, sToken, solidBrush.Color);
-                }
+                Write(position.X, position.Y + i, token, solidBrush.Color);
             }
+
+            return new RectangleF(position, new SizeF(tokens.Max(x => x.Length), tokens.Length));
         }
 
         private void Write(float x, float y, string s, Color color)
@@ -176,12 +191,6 @@ namespace hesanta.Drawing.ASCII
 
             Output = Output.Remove(position, s.Length);
             Output = Output.Insert(position, s);
-
-            if (Output2.ContainsKey((x, y)))
-            {
-                Output2.Remove((x, y));
-            }
-            Output2.Add((x, y), (s, color));
 
             AddColor(position, s.Length, color);
         }
@@ -236,7 +245,6 @@ namespace hesanta.Drawing.ASCII
         public void Clear()
         {
             Colors.Clear();
-            Output2.Clear();
             Output = new string(' ', Height * Width);
 
             for (int i = 1; i < Height; i++)

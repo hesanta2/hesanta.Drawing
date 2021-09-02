@@ -9,9 +9,9 @@ namespace hesanta.Drawing
         bool EngineRunning { get; set; }
         int FPS { get; }
         float DeltaTime { get; }
+        IGraphics<T> Graphics { get; }
 
         void Start();
-        void Flush(IGraphics<T> graphics, Action<string, Color> outputWithColor);
-        void Flush2(IGraphics<T> graphics, Action<(PointF, string), Color> outputWithColor);
+        void Flush(Action<string, Color> outputWithColor);
     }
 }

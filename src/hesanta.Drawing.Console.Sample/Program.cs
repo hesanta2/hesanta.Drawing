@@ -1,5 +1,6 @@
 ﻿using hesanta.Drawing.ASCII;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using TrueColorConsole;
 using Graphics = hesanta.Drawing.ASCII.Graphics;
@@ -16,22 +17,13 @@ namespace hesanta.Drawing.Console.Sample
 
         static void Main()
         {
-            var diagonalLineLength = 14;
-            var diagonalLineP1 = new PointF(11, 6);
-            var diagonalLineP2 = new PointF(diagonalLineP1.X + diagonalLineLength, diagonalLineP1.Y + diagonalLineLength);
-            var diagonalLine2P1 = new PointF(25, 6);
-            var diagonalLine2P2 = new PointF(diagonalLine2P1.X - diagonalLineLength, diagonalLine2P1.Y + diagonalLineLength);
-
-            var lineLength = 15;
-            var line1P1 = new PointF(18, 6);
-            var line1P2 = new PointF(18, 6 + lineLength);
-            var line2P1 = new PointF(0, 13);
-            var line2P2 = new PointF(lineLength * 3, 13);
-            PointF poligon = new PointF(70, 10);
-
             IGraphics<string> graphics = new Graphics(120, 30);
+            IGraphicsEngine<string> engine = new GraphicsEngineASCII(graphics);
 
-            IGraphicsEngine<string> engine = new GraphicsEngineASCII();
+            IEngineObject<string> legend = new Legend(engine);
+            IEngineObject<string> movingXSquare = new MovingXSquare(engine);
+            IEngineObject<string> poligon = new Poligon(engine);
+
             engine.Update = () =>
             {
                 pressedKey = HookKey(engine);
@@ -39,33 +31,12 @@ namespace hesanta.Drawing.Console.Sample
 
                 graphics.Clear();
 
-                graphics.DrawString($"FPS: {engine.FPS}", textBrush, new PointF(0, 0));
-                graphics.DrawString($"DeltaTime: {engine.DeltaTime}", textBrush, new PointF(0, 1));
-                graphics.DrawString($"Colored (keys:c/b): {colored}", textBrush, new PointF(0, 2));
-
-                graphics.DrawRectangle(new Pen(new SolidBrush(Color.Blue), 2), new PointF(x, 6), 30, 15);
-                graphics.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new PointF(x + 7, 9), 16, 8);
-                graphics.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new PointF(x + 11, 11), 7, 4);
-                graphics.DrawLine(new Pen(new SolidBrush(Color.DarkGreen)), line1P1, line1P2);
-                graphics.DrawLine(new Pen(new SolidBrush(Color.Coral)), line2P1, line2P2);
-                graphics.DrawLine(new Pen(new SolidBrush(Color.DarkTurquoise)), diagonalLineP1, diagonalLineP2);
-                graphics.DrawLine(new Pen(new SolidBrush(Color.DarkTurquoise)), diagonalLine2P1, diagonalLine2P2);
-
-                graphics.DrawPoligon(
-                    new Pen(new SolidBrush(Color.Gold)),
-                    true
-                    , new PointF(poligon.X + 0, poligon.Y + 0)
-                    , new PointF(poligon.X + 0, poligon.Y + 10)
-                    , new PointF(poligon.X + 10, poligon.Y + 10)
-                    , new PointF(poligon.X + 20, poligon.Y + 0)
-                    , new PointF(poligon.X + 16, poligon.Y - 4)
-                    , new PointF(poligon.X + 4, poligon.Y - 4)
-                    );
+                legend.Draw();
+                movingXSquare.Draw();
+                poligon.Draw();
 
                 ProcessVelocityAndDirection(engine);
-
                 ProcessColoredKeys();
-
                 Render(graphics, engine);
             };
             engine.Start();
@@ -77,7 +48,7 @@ namespace hesanta.Drawing.Console.Sample
             System.Console.SetCursorPosition(0, 0);
             if (colored)
             {
-                engine.Flush(graphics, (string output, Color color) =>
+                engine.Flush((string output, Color color) =>
                 {
                     VTConsole.Write(output, color);
                 });
@@ -122,6 +93,87 @@ namespace hesanta.Drawing.Console.Sample
             }
 
             return null;
+        }
+
+        private class Legend : EngineObject<string>
+        {
+            public Legend(IGraphicsEngine<string> engine) : base(engine) { }
+
+            public override IEnumerable<RectangleF> InternalDraw()
+            {
+                var b1 = Engine.Graphics.DrawString($@"
+FPS: {Engine.FPS} 
+DeltaTime: { Engine.DeltaTime}
+Colored(keys: c / b): { colored}
+", textBrush, Position);
+
+                return new List<RectangleF> { b1 };
+            }
+        }
+
+        private class Poligon : EngineObject<string>
+        {
+            PointF poligon = new PointF(70, 5);
+
+            public Poligon(IGraphicsEngine<string> engine) : base(engine) { }
+
+            public override IEnumerable<RectangleF> InternalDraw()
+            {
+                var b1 = Engine.Graphics.DrawPoligon(
+                    new Pen(new SolidBrush(Color.Gold)),
+                    true
+                    , new PointF(poligon.X + 0, poligon.Y + 0)
+                    , new PointF(poligon.X + 10, poligon.Y + 0)
+                    , new PointF(poligon.X + 15, poligon.Y + 5)
+                    , new PointF(poligon.X + 15, poligon.Y + 10)
+                    , new PointF(poligon.X + 10, poligon.Y + 15)
+                    , new PointF(poligon.X + 0, poligon.Y + 15)
+                    , new PointF(poligon.X - 5, poligon.Y + 10)
+                    , new PointF(poligon.X - 5, poligon.Y + 5)
+                    );
+
+                return new List<RectangleF> { b1 };
+            }
+        }
+
+        private class MovingXSquare : EngineObject<string>
+        {
+            int diagonalLineLength = 14;
+            PointF diagonalLineP1;
+            PointF diagonalLineP2;
+            PointF diagonalLine2P1;
+            PointF diagonalLine2P2;
+
+            int lineLength = 15;
+            PointF line1P1;
+            PointF line1P2;
+            PointF line2P1;
+            PointF line2P2;
+
+            public MovingXSquare(IGraphicsEngine<string> engine) : base(engine)
+            {
+                diagonalLineP1 = new PointF(11, 6);
+                diagonalLineP2 = new PointF(diagonalLineP1.X + diagonalLineLength, diagonalLineP1.Y + diagonalLineLength);
+                diagonalLine2P1 = new PointF(25, 6);
+                diagonalLine2P2 = new PointF(diagonalLine2P1.X - diagonalLineLength, diagonalLine2P1.Y + diagonalLineLength);
+                line1P1 = new PointF(18, 6);
+                line1P2 = new PointF(18, 6 + lineLength);
+                line2P1 = new PointF(0, 13);
+                line2P2 = new PointF(lineLength * 3, 13);
+            }
+
+            public override IEnumerable<RectangleF> InternalDraw()
+            {
+                var b = Engine.Graphics.DrawRectangle(new Pen(new SolidBrush(Color.Blue), 2), new PointF(x, 6), 30, 15);
+                var b1 = Engine.Graphics.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new PointF(x + 7, 9), 16, 8);
+                var b2 = Engine.Graphics.DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new PointF(x + 11, 11), 7, 4);
+                var b3 = Engine.Graphics.DrawLine(new Pen(new SolidBrush(Color.DarkGreen)), line1P1, line1P2);
+                var b4 = Engine.Graphics.DrawLine(new Pen(new SolidBrush(Color.Coral)), line2P1, line2P2);
+                var b5 = Engine.Graphics.DrawLine(new Pen(new SolidBrush(Color.DarkTurquoise)), diagonalLineP1, diagonalLineP2);
+                var b6 = Engine.Graphics.DrawLine(new Pen(new SolidBrush(Color.DarkTurquoise)), diagonalLine2P1, diagonalLine2P2);
+
+                return new List<RectangleF> { b, b1, b2, b3, b4, b5, b6 };
+            }
         }
     }
 }

@@ -9,12 +9,11 @@ namespace hesanta.Drawing
         int Width { get; }
         int Height { get; }
         SortedList<int, Color> Colors { get; }
-        SortedList<(float, float), (T, Color)> Output2 { get; }
 
-        void DrawString(string s, Brush brush, PointF position);
-        void DrawRectangle(Pen pen, PointF position, float width, float height);
-        void DrawLine(Pen pen, PointF p1, PointF p2);
+        RectangleF DrawString(string s, Brush brush, PointF position);
+        RectangleF DrawRectangle(Pen pen, PointF position, float width, float height);
+        RectangleF DrawLine(Pen pen, PointF p1, PointF p2);
+        RectangleF DrawPoligon(Pen pen, bool closed, params PointF[] points);
         void Clear();
-        void DrawPoligon(Pen pen, bool closed, params PointF[] points);
     }
 }
