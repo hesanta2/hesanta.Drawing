@@ -8,7 +8,7 @@ namespace hesanta.Drawing.Engine
     public abstract class EngineObject<T> : IEngineObject<T>
     {
         public IGraphicsEngine<T> Engine { get; }
-        public PointF Position { get; set; } = new Point(0, 0);
+        public Position Position { get; set; } = new PointF(0, 0);
         public SizeF Size { get; protected set; }
 
         protected EngineObject(IGraphicsEngine<T> engine)

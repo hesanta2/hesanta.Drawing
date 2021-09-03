@@ -7,10 +7,11 @@ namespace hesanta.Drawing.Engine
     public abstract class GraphicsEngine<T> : IGraphicsEngine<T>
     {
         public bool EngineRunning { get; set; }
-        public Action Update { get; set; }
+        public Action<ConsoleKey?> Update { get; set; }
         public int FPS => currentFps;
         public float DeltaTime { get; protected set; } = 0.0001f;
         public IGraphics<T> Graphics { get; }
+        public ConsoleKey? PressedKey { get; protected set; }
 
         private static readonly Stopwatch stopwatchFps = new Stopwatch();
         private static readonly Stopwatch stopwatchDelta = new Stopwatch();
@@ -29,10 +30,13 @@ namespace hesanta.Drawing.Engine
             while (EngineRunning)
             {
                 stopwatchDelta.Restart();
-                Update();
+                PressedKey = HookKeys();
+                Update(PressedKey);
                 CalculateDeltaAndFrames();
             }
         }
+
+        public abstract ConsoleKey? HookKeys();
 
         private void CalculateDeltaAndFrames()
         {
@@ -48,6 +52,6 @@ namespace hesanta.Drawing.Engine
             frames++;
         }
 
-        public abstract void Flush( Action<string, Color> outputWithColor);
+        public abstract void Flush(Action<string, Color> outputWithColor);
     }
 }

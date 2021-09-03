@@ -10,7 +10,6 @@ namespace hesanta.Drawing.Console.Sample
 {
     class Program
     {
-        private static ConsoleKeyInfo? pressedKey = null;
         private static SolidBrush textBrush = new SolidBrush(Color.Aqua);
         private static float x = 0;
         private static float velocityDirection = 1;
@@ -25,10 +24,9 @@ namespace hesanta.Drawing.Console.Sample
             IEngineObject<string> movingXSquare = new MovingXSquare(engine);
             IEngineObject<string> poligon = new Poligon(engine);
 
-            engine.Update = () =>
+            engine.Update = (pressedKey) =>
             {
-                pressedKey = HookKey(engine);
-                if (pressedKey?.Key == ConsoleKey.Escape) { engine.EngineRunning = false; }
+                if (pressedKey == ConsoleKey.Escape) { engine.EngineRunning = false; }
 
                 graphics.Clear();
 
@@ -37,7 +35,7 @@ namespace hesanta.Drawing.Console.Sample
                 poligon.Draw();
 
                 ProcessVelocityAndDirection(engine);
-                ProcessColoredKeys();
+                ProcessColoredKeys(pressedKey);
                 Render(graphics, engine);
             };
             engine.Start();
@@ -74,26 +72,16 @@ namespace hesanta.Drawing.Console.Sample
             x += 25 * engine.DeltaTime * velocityDirection;
         }
 
-        private static void ProcessColoredKeys()
+        private static void ProcessColoredKeys(ConsoleKey? key)
         {
             if (!colored)
             {
-                colored = pressedKey?.Key == ConsoleKey.C;
+                colored = key == ConsoleKey.C;
             }
             else
             {
-                colored = !(pressedKey?.Key == ConsoleKey.B);
+                colored = !(key == ConsoleKey.B);
             }
-        }
-
-        private static ConsoleKeyInfo? HookKey(IGraphicsEngine<string> engine)
-        {
-            if (System.Console.KeyAvailable)
-            {
-                return System.Console.ReadKey(true);
-            }
-
-            return null;
         }
 
         private class Legend : EngineObject<string>

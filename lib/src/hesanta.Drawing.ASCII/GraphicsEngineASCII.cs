@@ -33,5 +33,15 @@ namespace hesanta.Drawing.ASCII
                 outputWithColor(subOutput, color);
             }
         }
+
+        public override ConsoleKey? HookKeys()
+        {
+            if (System.Console.KeyAvailable)
+            {
+                return System.Console.ReadKey(true).Key;
+            }
+
+            return null;
+        }
     }
 }
