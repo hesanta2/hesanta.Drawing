@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace hesanta.Drawing
+namespace hesanta.Drawing.Engine
 {
     public interface IGraphicsEngine<T>
     {

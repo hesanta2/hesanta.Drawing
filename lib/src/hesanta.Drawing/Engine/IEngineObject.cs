@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace hesanta.Drawing
+namespace hesanta.Drawing.Engine
 {
     public interface IEngineObject<T>
     {

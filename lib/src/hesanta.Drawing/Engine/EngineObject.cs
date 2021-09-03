@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace hesanta.Drawing
+namespace hesanta.Drawing.Engine
 {
     public abstract class EngineObject<T> : IEngineObject<T>
     {

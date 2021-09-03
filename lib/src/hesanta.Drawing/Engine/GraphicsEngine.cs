@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 
-namespace hesanta.Drawing
+namespace hesanta.Drawing.Engine
 {
     public abstract class GraphicsEngine<T> : IGraphicsEngine<T>
     {
