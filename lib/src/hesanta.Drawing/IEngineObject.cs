@@ -8,6 +8,6 @@ namespace hesanta.Drawing
         PointF Position { get; set; }
         SizeF Size { get; }
 
-        void Draw();
+        void Draw(params object[] args);
     }
 }

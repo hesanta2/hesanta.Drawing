@@ -99,7 +99,7 @@ namespace hesanta.Drawing.Console.Sample
         {
             public Legend(IGraphicsEngine<string> engine) : base(engine) { }
 
-            public override IEnumerable<RectangleF> InternalDraw()
+            public override IEnumerable<RectangleF> InternalDraw(params object[] args)
             {
                 var b1 = Engine.Graphics.DrawString($@"
 FPS: {Engine.FPS} 
@@ -117,7 +117,7 @@ Colored(keys: c / b): { colored}
 
             public Poligon(IGraphicsEngine<string> engine) : base(engine) { }
 
-            public override IEnumerable<RectangleF> InternalDraw()
+            public override IEnumerable<RectangleF> InternalDraw(params object[] args)
             {
                 var b1 = Engine.Graphics.DrawPoligon(
                     new Pen(new SolidBrush(Color.Gold)),
@@ -162,7 +162,7 @@ Colored(keys: c / b): { colored}
                 line2P2 = new PointF(lineLength * 3, 13);
             }
 
-            public override IEnumerable<RectangleF> InternalDraw()
+            public override IEnumerable<RectangleF> InternalDraw(params object[] args)
             {
                 var b = Engine.Graphics.DrawRectangle(new Pen(new SolidBrush(Color.Blue), 2), new PointF(x, 6), 30, 15);
                 var b1 = Engine.Graphics.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new PointF(x + 7, 9), 16, 8);

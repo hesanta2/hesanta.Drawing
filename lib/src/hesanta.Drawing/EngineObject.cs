@@ -16,11 +16,11 @@ namespace hesanta.Drawing
             Engine = engine ?? throw new ArgumentNullException(nameof(engine));
         }
 
-        public abstract IEnumerable<RectangleF> InternalDraw();
+        public abstract IEnumerable<RectangleF> InternalDraw(params object[] args);
 
-        public void Draw()
+        public void Draw(params object[] args)
         {
-            var boundsList = InternalDraw();
+            var boundsList = InternalDraw(args);
             var x = Math.Ceiling(boundsList.Min(x => x.X));
             var y = Math.Ceiling(boundsList.Min(x => x.Y));
             var width = Math.Ceiling(Math.Abs(boundsList.Max(x => x.X + x.Width) - x));
