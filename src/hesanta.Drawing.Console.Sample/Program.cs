@@ -9,32 +9,47 @@ namespace hesanta.Drawing.Console.Sample
 {
     partial class Program
     {
+        private static IGraphics<string> graphics;
+        private static IGraphicsEngine<string> engine;
+
         private static SolidBrush textBrush = new SolidBrush(Color.Aqua);
         private static float x = 0;
         private static float velocityDirection = 1;
         private static bool colored = true;
 
+        private static IEngineObject<string> legend;
+        private static IEngineObject<string> movingXSquare;
+        private static IEngineObject<string> poligon;
+        private static IEngineObject<string> ship;
+
         static void Main()
         {
-            IGraphics<string> graphics = new Graphics(120, 30);
-            IGraphicsEngine<string> engine = new GraphicsEngineASCII(graphics);
+            graphics = new Graphics(120, 30);
+            engine = new GraphicsEngineASCII(graphics);
 
-            IEngineObject<string> legend = new Legend(engine);
-            IEngineObject<string> movingXSquare = new MovingXSquare(engine);
-            IEngineObject<string> poligon = new Poligon(engine);
+            legend = new Legend(engine);
+            movingXSquare = new MovingXSquare(engine);
+            poligon = new Poligon(engine);
 
             engine.Update = (pressedKey) =>
             {
+                ProcessKeys(pressedKey);
+                ProcessVelocityAndDirection(engine);
+
                 if (pressedKey == ConsoleKey.Escape) { engine.EngineRunning = false; }
+                var velocity = 1f;
 
                 graphics.Clear();
-
                 legend.Draw(colored);
                 movingXSquare.Draw(x);
                 poligon.Draw();
 
-                ProcessVelocityAndDirection(engine);
-                ProcessColoredKeys(pressedKey);
+                if (pressedKey == ConsoleKey.LeftArrow && ship.Position.X > 0)
+                    ship.Position.X -= velocity;
+                if (pressedKey == ConsoleKey.RightArrow && ship.Position.X < engine.Graphics.Width - ship.Size.Width)
+                    ship.Position.X += velocity;
+
+
                 Render(graphics, engine);
             };
             engine.Start();
@@ -71,7 +86,7 @@ namespace hesanta.Drawing.Console.Sample
             x += 25 * engine.DeltaTime * velocityDirection;
         }
 
-        private static void ProcessColoredKeys(ConsoleKey? key)
+        private static void ProcessKeys(ConsoleKey? key)
         {
             if (!colored)
             {

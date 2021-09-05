@@ -182,12 +182,14 @@ namespace hesanta.Drawing.ASCII
 
         private void Write(float x, float y, string s, Color color)
         {
-            if (x < 0 || y < 0 || x > Width || y >= Height)
+            int intX = (int)x;
+            int intY = (int)y;
+            if (intX < 0 || intY < 0 || intX > Width || intY >= Height)
             {
                 return;
             }
 
-            var position = (int)((x + y * Width) + (x + y * Width) / Width);
+            var position = (intX + intY * Width) + (intX + intY * Width) / Width;
 
             Output = Output.Remove(position, s.Length);
             Output = Output.Insert(position, s);

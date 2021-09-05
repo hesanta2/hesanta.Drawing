@@ -9,17 +9,15 @@ namespace hesanta.Drawing.Console.Sample
         private SolidBrush textBrush = new SolidBrush(Color.Aqua);
         public Legend(IGraphicsEngine<string> engine) : base(engine) { }
 
-        public override IEnumerable<RectangleF> InternalDraw(params object[] args)
+        public override void InternalDraw(params object[] args)
         {
             bool colored = args?.Length > 0 ? (bool)args[0] : false;
 
-            var b1 = Engine.Graphics.DrawString($@"
+            DrawString($@"
 FPS: {Engine.FPS} 
-DeltaTime: { Engine.DeltaTime}
-Colored(keys: c / b): { colored}
+DeltaTime: {Engine.DeltaTime}
+Colored(keys: c / b): {colored}
 ", textBrush, Position);
-
-            return new List<RectangleF> { b1 };
         }
     }
 }
