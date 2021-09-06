@@ -12,7 +12,6 @@ namespace hesanta.Drawing.Console.Sample
         private static IGraphics<string> graphics;
         private static IGraphicsEngine<string> engine;
 
-        private static SolidBrush textBrush = new SolidBrush(Color.Aqua);
         private static float x = 0;
         private static float velocityDirection = 1;
         private static bool colored = true;

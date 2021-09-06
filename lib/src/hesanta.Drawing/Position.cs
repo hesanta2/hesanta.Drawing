@@ -16,6 +16,15 @@ namespace hesanta.Drawing
             Y = y;
         }
 
+        public static Position operator +(Position p1, Position p2)
+        {
+            return new Position(p1.X + p2.X, p1.Y + p2.Y);
+        }
+        public static Position operator -(Position p1, Position p2)
+        {
+            return new Position(p1.X - p2.X, p1.Y - p2.Y);
+        }
+
         public static implicit operator PointF(Position position)
         {
             return new PointF(position.X, position.Y);

@@ -7,15 +7,16 @@ namespace hesanta.Drawing.Engine
 {
     public abstract class EngineObject<T> : IEngineObject<T>
     {
-        private List<RectangleF> boundsList = new List<RectangleF>();
+        protected List<RectangleF> boundsList = new List<RectangleF>();
 
         public IGraphicsEngine<T> Engine { get; }
-        public Position Position { get; set; } = new PointF(0, 0);
-        public SizeF Size { get; protected set; }
+        public virtual Position Position { get; set; } = new PointF(0, 0);
+        public virtual SizeF Size { get; protected set; }
 
         protected EngineObject(IGraphicsEngine<T> engine)
         {
             Engine = engine ?? throw new ArgumentNullException(nameof(engine));
+            Engine.AddEngineObject(this);
         }
 
         public abstract void InternalDraw(params object[] args);

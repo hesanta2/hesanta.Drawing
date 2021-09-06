@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 
@@ -6,6 +7,9 @@ namespace hesanta.Drawing.Engine
 {
     public abstract class GraphicsEngine<T> : IGraphicsEngine<T>
     {
+        private List<EngineObject<T>> internalEngineObjects = new List<EngineObject<T>>();
+
+        public IEnumerable<EngineObject<T>> EngineObjects => internalEngineObjects;
         public bool EngineRunning { get; set; }
         public Action<ConsoleKey?> Update { get; set; }
         public int FPS => currentFps;
@@ -21,6 +25,11 @@ namespace hesanta.Drawing.Engine
         public GraphicsEngine(IGraphics<T> graphics)
         {
             Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
+        }
+
+        public void AddEngineObject(EngineObject<T> engineObject)
+        {
+            internalEngineObjects.Add(engineObject);
         }
 
         public void Start()
@@ -53,5 +62,10 @@ namespace hesanta.Drawing.Engine
         }
 
         public abstract void Flush(Action<string, Color> outputWithColor);
+
+        public void Reset()
+        {
+            internalEngineObjects.Clear();
+        }
     }
 }
