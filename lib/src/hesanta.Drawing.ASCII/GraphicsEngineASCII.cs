@@ -8,7 +8,10 @@ namespace hesanta.Drawing.ASCII
 {
     public class GraphicsEngineASCII : GraphicsEngine<string>
     {
-        public GraphicsEngineASCII(IGraphics<string> graphics) : base(graphics) {
+
+        public GraphicsEngineASCII(int width, int height, IGraphics<string> graphics) : base(width, height, graphics)
+        {
+            Console.SetWindowSize(width, height);
         }
 
         public override void Flush(Action<string, System.Drawing.Color> outputWithColor)

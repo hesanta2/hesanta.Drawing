@@ -15,7 +15,7 @@ namespace hesanta.Drawing.Engine
         IEnumerable<EngineObject<T>> EngineObjects { get; }
 
         void Start();
-        void Flush(Action<string, Color> outputWithColor);
+        void Flush(Action<T, Color> outputWithColor);
         ConsoleKey? HookKeys();
         void AddEngineObject(EngineObject<T> engineObject);
         void Reset();

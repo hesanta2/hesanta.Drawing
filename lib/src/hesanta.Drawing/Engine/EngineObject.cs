@@ -11,7 +11,7 @@ namespace hesanta.Drawing.Engine
 
         public IGraphicsEngine<T> Engine { get; }
         public virtual Position Position { get; set; } = new PointF(0, 0);
-        public virtual SizeF Size { get; protected set; }
+        public virtual RectangleF Bounds { get; protected set; }
 
         protected EngineObject(IGraphicsEngine<T> engine)
         {
@@ -33,7 +33,17 @@ namespace hesanta.Drawing.Engine
                 var width = Math.Ceiling(Math.Abs(boundsList.Max(x => x.X + x.Width) - x));
                 var height = Math.Ceiling(Math.Abs(boundsList.Max(x => x.Y + x.Height) - y));
 
-                Size = new SizeF((float)width, (float)height);
+                Bounds = new RectangleF((float)x, (float)y, (float)width, (float)height);
+            }
+        }
+
+
+        public void DrawPixel(Pen pen, PointF position, bool addToBounds = true)
+        {
+            var bounds = Engine.Graphics.DrawPixel(pen, position);
+            if (addToBounds)
+            {
+                boundsList.Add(bounds);
             }
         }
 
@@ -64,9 +74,9 @@ namespace hesanta.Drawing.Engine
             }
         }
 
-        public void DrawPoligon(Pen pen, bool closed, bool addToBounds = true, params PointF[] points)
+        public void DrawPoligon(Pen pen, bool closed, bool relative = true, bool addToBounds = true, params PointF[] points)
         {
-            var bounds = Engine.Graphics.DrawPoligon(pen, closed, points);
+            var bounds = Engine.Graphics.DrawPoligon(pen, closed, relative, points);
             if (addToBounds)
             {
                 boundsList.Add(bounds);

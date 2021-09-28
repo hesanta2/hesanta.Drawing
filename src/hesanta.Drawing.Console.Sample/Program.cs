@@ -23,10 +23,15 @@ namespace hesanta.Drawing.Console.Sample
 
         static void Main()
         {
-            graphics = new Graphics(120, 30);
-            engine = new GraphicsEngineASCII(graphics);
+            float aspectProportion = 0.9f;
+            int width = (int)(System.Console.LargestWindowWidth * aspectProportion);
+            int height = (int)(System.Console.LargestWindowHeight * aspectProportion);
+            graphics = new Graphics(100, 50);
+            engine = new GraphicsEngineASCII(width, height, graphics);
 
             legend = new Legend(engine);
+            legend.Position.X += 2;
+            legend.Position.Y += 2;
             movingXSquare = new MovingXSquare(engine);
             poligon = new Poligon(engine);
 
@@ -42,10 +47,30 @@ namespace hesanta.Drawing.Console.Sample
                 legend.Draw(colored);
                 movingXSquare.Draw(x);
                 poligon.Draw();
+                graphics.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new PointF(poligon.Bounds.X, poligon.Bounds.Y), poligon.Bounds.Width, poligon.Bounds.Height);
+
+                //graphics.DrawPixel(new Pen(new SolidBrush(Color.BlueViolet)), new PointF(25, 25));
+                //graphics.DrawLine(new Pen(new SolidBrush(Color.Fuchsia)), new PointF(1, 3), new PointF(13, 8));
+                //var bounds = graphics.DrawLine(new Pen(new SolidBrush(Color.Fuchsia)), new PointF(3, 20), new PointF(23, 10));
+                //graphics.DrawRectangle(new Pen(new SolidBrush(Color.Red)), new PointF(bounds.X, bounds.Y), bounds.Width, bounds.Height);
+
+                //graphics.DrawRectangle(new Pen(Color.Red), new PointF(0, 0), width, height);
+
+                //graphics.DrawRectangle(new Pen(Color.Red), new PointF(2, 2), 25, 25);
+
+                for (int x = 0; x < graphics.Width; x++)
+                {
+                    graphics.DrawString(x.ToString(), new SolidBrush(Color.White), new PointF(x, 0));
+                }
+
+                for (int y = 0; y < graphics.Height; y++)
+                {
+                    graphics.DrawString(y.ToString(), new SolidBrush(Color.White), new PointF(0, y));
+                }
 
                 if (pressedKey == ConsoleKey.LeftArrow && ship.Position.X > 0)
                     ship.Position.X -= velocity;
-                if (pressedKey == ConsoleKey.RightArrow && ship.Position.X < engine.Graphics.Width - ship.Size.Width)
+                if (pressedKey == ConsoleKey.RightArrow && ship.Position.X < engine.Graphics.Width - ship.Bounds.Width)
                     ship.Position.X += velocity;
 
 
@@ -73,7 +98,7 @@ namespace hesanta.Drawing.Console.Sample
 
         private static void ProcessVelocityAndDirection(IGraphicsEngine<string> engine)
         {
-            if (velocityDirection == 1 && x >= 10)
+            if (velocityDirection == 1 && x >= 15)
             {
                 velocityDirection = -1;
             }

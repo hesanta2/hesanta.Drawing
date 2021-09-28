@@ -21,23 +21,23 @@ namespace hesanta.Drawing.Console.Sample
 
         public MovingXSquare(IGraphicsEngine<string> engine) : base(engine)
         {
-            diagonalLineP1 = new PointF(11, 6);
+            diagonalLineP1 = new PointF(7, 6);
             diagonalLineP2 = new PointF(diagonalLineP1.X + diagonalLineLength, diagonalLineP1.Y + diagonalLineLength);
-            diagonalLine2P1 = new PointF(25, 6);
+            diagonalLine2P1 = new PointF(21, 6);
             diagonalLine2P2 = new PointF(diagonalLine2P1.X - diagonalLineLength, diagonalLine2P1.Y + diagonalLineLength);
-            line1P1 = new PointF(18, 6);
-            line1P2 = new PointF(18, 6 + lineLength);
+            line1P1 = new PointF(14, 6);
+            line1P2 = new PointF(14, 6 + lineLength);
             line2P1 = new PointF(0, 13);
-            line2P2 = new PointF(lineLength * 3, 13);
+            line2P2 = new PointF(lineLength * 2, 13);
         }
 
         public override void InternalDraw(params object[] args)
         {
             float x = args?.Length > 0 ? (float)args[0] : 0;
 
-            DrawRectangle(new Pen(new SolidBrush(Color.Blue), 2), new PointF(x, 6), 30, 15);
-            DrawRectangle(new Pen(new SolidBrush(Color.Red)), new PointF(x + 7, 9), 16, 8);
-            DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new PointF(x + 11, 11), 7, 4);
+            DrawRectangle(new Pen(new SolidBrush(Color.Blue), 2), new PointF(x, 6), 15, 15);
+            DrawRectangle(new Pen(new SolidBrush(Color.Red)), new PointF(x + 4, 9), 8, 8);
+            DrawRectangle(new Pen(new SolidBrush(Color.Pink)), new PointF(x + 6, 11), 4, 4);
             DrawLine(new Pen(new SolidBrush(Color.DarkGreen)), line1P1, line1P2);
             DrawLine(new Pen(new SolidBrush(Color.Coral)), line2P1, line2P2);
             DrawLine(new Pen(new SolidBrush(Color.DarkTurquoise)), diagonalLineP1, diagonalLineP2);

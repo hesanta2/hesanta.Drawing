@@ -7,6 +7,7 @@ namespace hesanta.Drawing.Console.Sample
     public class Poligon : EngineObject<string>
     {
         PointF poligon = new PointF(70, 5);
+        public override Position Position => poligon;
 
         public Poligon(IGraphicsEngine<string> engine) : base(engine) { }
 
@@ -15,7 +16,8 @@ namespace hesanta.Drawing.Console.Sample
             DrawPoligon(
                 new Pen(new SolidBrush(Color.Gold)),
                 true,
-                true
+                relative: false,
+                addToBounds: true
                 , new PointF(poligon.X + 0, poligon.Y + 0)
                 , new PointF(poligon.X + 10, poligon.Y + 0)
                 , new PointF(poligon.X + 15, poligon.Y + 5)
